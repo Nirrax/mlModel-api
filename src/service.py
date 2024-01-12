@@ -35,6 +35,7 @@ def generate_mfcc_from_file(file_path, n_mfcc=13, n_fft=2048, hop_length=512):
   expected_number_of_mfcc_vectors_per_segment = 130
     
   for segment in range(number_of_segments):
+    
       start_sample = number_of_samples_per_segment * segment
       finish_sample = start_sample + number_of_samples_per_segment
     
@@ -54,3 +55,36 @@ def generate_mfcc_from_file(file_path, n_mfcc=13, n_fft=2048, hop_length=512):
         mfccs.append(mfcc.tolist())
 
   return np.array(mfccs)
+
+def predict(model, X):
+  
+  list_of_genres = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
+  
+  dict = {
+    'blues': 0,
+    'classical': 0,
+    'country': 0,
+    'disco': 0,
+    'hiphop': 0,
+    'jazz': 0,
+    'metal': 0,
+    'pop': 0,
+    'reggae': 0,
+    'rock': 0
+  }
+  
+  for segment in X:
+  
+    segment = segment[np.newaxis, ...]
+    
+    prediction = model.predict(segment)
+    
+    # extract index with max value
+    predicted_index = np.argmax(prediction, axis=1)
+    
+    # get the predicted genre from the list
+    predicted_genre = list_of_genres[int(predicted_index)]
+    
+    dict[predicted_genre] += 1
+  
+  return dict
