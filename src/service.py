@@ -14,3 +14,8 @@ async def save_file_from_request(request, filepath):
       
   except Exception as e:
     print(f'Error: {str(e)}')
+    
+def convert_mp3_to_wav(filepath, filename):
+  
+  audio = AudioSegment.from_mp3(filepath+'.mp3')
+  audio.export(filename+'.wav', format='wav')    
