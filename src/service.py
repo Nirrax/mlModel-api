@@ -20,7 +20,7 @@ def convert_mp3_to_wav(filepath, filename):
   audio = AudioSegment.from_mp3(filepath+'.mp3')
   audio.export(filename+'.wav', format='wav')    
   
-def prepare_file(file_path, n_mfcc=13, n_fft=2048, hop_length=512):
+def generate_mfcc_from_file(file_path, n_mfcc=13, n_fft=2048, hop_length=512):
 
   SAMPLE_RATE = 22050
   mfccs = []
