@@ -1,5 +1,17 @@
 from dependencies import *
 
+def get_key_with_max_value(dict):
+  max_key = None
+  max_value = float('-inf')
+
+  # Iterate through key-value pairs
+  for key, value in dict.items():
+    if value > max_value:
+        max_key = key
+        max_value = value
+  
+  return max_key
+
 async def save_file_from_request(request, filepath):
   try:
     
@@ -60,6 +72,8 @@ def predict(model, X):
   
   list_of_genres = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
   
+  genres_sequence = []
+  
   dict = {
     'blues': 0,
     'classical': 0,
@@ -85,6 +99,12 @@ def predict(model, X):
     # get the predicted genre from the list
     predicted_genre = list_of_genres[int(predicted_index)]
     
+    # save sequence of genres 
+    genres_sequence.append(predicted_genre)
+    
     dict[predicted_genre] += 1
+    
+  # extract main genre from the dictionary
+  genre = get_key_with_max_value(dict)
   
-  return dict
+  return genre, dict, genres_sequence
