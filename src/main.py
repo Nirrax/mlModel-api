@@ -23,6 +23,12 @@ async def genre_endpoint(request: Request):
   
   mfccs = generate_mfcc_from_file(filename+'.wav')
   
-  print(predict(model, mfccs))
- 
-  return 'success'
+  genre, genres_distribution, genres_sequence = predict(model, mfccs)
+  
+  response = {
+    "genre": genre,
+    "genres_sequence": genres_sequence,
+    "genres_distribution": genres_distribution
+  }
+  
+  return response
