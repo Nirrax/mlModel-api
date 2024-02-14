@@ -1,23 +1,32 @@
 from dependencies import *
 
-def get_key_with_max_value(dict):
-  max_key = None
-  max_value = float('-inf')
-
-  # Iterate through key-value pairs
-  for key, value in dict.items():
-    if value > max_value:
-        max_key = key
-        max_value = value
+def parse_request(request: dict):
   
-  return max_key
+  return request.json()
 
-async def save_file_from_request(request, filepath):
+def generate_unique_filename(request: dict):
+  
+  title = request.get('fileName')
+  
+  #generate unique uuid 
+  unique_string = str(uuid.uuid4().hex)[:8]
+  return unique_string + '_' + title
+
+def is_filename_unique(filename: str, directory: str):
+  
+  files_in_directory = os.listdir(directory)
+  
+  if filename in files_in_directory:
+    return False
+  else:
+    return True
+
+async def save_file_from_request(request: dict, filepath: str):
   try:
     
     #parse data from request
-    data = await request.json()
-    base64_data = data.get('file')
+    #data = await request.json()
+    base64_data = request.get('base64Data')
     binary_data = base64.b64decode(base64_data)
     
     #save file to mp3
@@ -27,18 +36,28 @@ async def save_file_from_request(request, filepath):
   except Exception as e:
     print(f'Error: {str(e)}')
     
-def convert_mp3_to_wav(filepath, filename):
+def convert_mp3_to_wav(filepath: str):
   
   audio = AudioSegment.from_mp3(filepath+'.mp3')
-  audio.export(filename+'.wav', format='wav')    
-  
-def generate_mfcc_from_file(file_path, n_mfcc=13, n_fft=2048, hop_length=512):
+  audio.export(filepath+'.wav', format='wav')    
+ 
+def delete_wavs(directory='../mp3/'):
+  # List all files in the directory
+  files = os.listdir(directory)
+
+  # Iterate through files and delete those with .wav extension
+  for file in files:
+      if file.endswith(".wav"):
+          file_path = os.path.join(directory, file)
+          os.remove(file_path)
+
+def generate_mfcc_from_file(filepath: str, n_mfcc=13, n_fft=2048, hop_length=512):
 
   SAMPLE_RATE = 22050
   mfccs = []
 
   # load file with librosa
-  signal, sr = librosa.load(file_path, sr=SAMPLE_RATE)
+  signal, sr = librosa.load(filepath+'.wav', sr=SAMPLE_RATE)
   duration = math.floor(librosa.get_duration(y=signal, sr=SAMPLE_RATE))
 
   number_of_segments = int(duration / 3)
@@ -108,3 +127,16 @@ def predict(model, X):
   genre = get_key_with_max_value(dict)
   
   return genre, dict, genres_sequence
+
+def get_key_with_max_value(dict: dict):
+  max_key = None
+  max_value = float('-inf')
+
+  # Iterate through key-value pairs
+  for key, value in dict.items():
+    if value > max_value:
+        max_key = key
+        max_value = value
+  
+  return max_key
+
