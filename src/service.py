@@ -1,16 +1,13 @@
 from dependencies import *
+from schemas import Classification_request
 
-def parse_request(request: dict):
+def generate_unique_filename(request: Classification_request):
   
-  return request.json()
-
-def generate_unique_filename(request: dict):
-  
-  title = request.get('fileName')
+  filename = request.fileName
   
   #generate unique uuid 
   unique_string = str(uuid.uuid4().hex)[:8]
-  return unique_string + '_' + title
+  return unique_string + '_' + filename
 
 def is_filename_unique(filename: str, directory: str):
   
@@ -21,12 +18,12 @@ def is_filename_unique(filename: str, directory: str):
   else:
     return True
 
-async def save_file_from_request(request: dict, filepath: str):
+async def save_file_from_request(request: Classification_request, filepath: str):
   try:
     
     #parse data from request
     #data = await request.json()
-    base64_data = request.get('base64Data')
+    base64_data = request.base64Data
     binary_data = base64.b64decode(base64_data)
     
     #save file to mp3

@@ -1,5 +1,6 @@
 from dependencies import *
 from service import *
+from schemas import Classification_request
 
 app = FastAPI()
 
@@ -14,22 +15,20 @@ app.add_middleware(
 )
 
 @app.post('/')
-async def genre_endpoint(request: Request):
+async def genre_endpoint(request: Classification_request):
   
   filename = ''
   filepath = '../mp3/'
   
-  data = await parse_request(request)
-  
   while True:
     
-    filename = generate_unique_filename(data)
+    filename = generate_unique_filename(request)
     
     if is_filename_unique(filename, filepath):
       filepath += filename
       break
   
-  await save_file_from_request(data, filepath)
+  await save_file_from_request(request, filepath)
   convert_mp3_to_wav(filepath)
   
   mfccs = generate_mfcc_from_file(filepath)
