@@ -6,7 +6,7 @@ def generate_unique_filename(request: Classification_request):
   filename = request.fileName
   
   #generate unique uuid 
-  unique_string = str(uuid.uuid4().hex)[:8]
+  unique_string = str(uuid.uuid4().hex)[:4]
   return unique_string + '_' + filename
 
 def is_filename_unique(filename: str, directory: str):
