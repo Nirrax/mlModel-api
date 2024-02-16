@@ -34,6 +34,8 @@ async def genre_endpoint(request: Classification_request):
   mfccs = generate_mfcc_from_file(filepath)
   
   delete_wavs()
+  filename = filename.replace(' ', '+')
+  
   
   genre, genre_distribution, genre_sequence = predict(model, mfccs)
   
@@ -48,7 +50,10 @@ async def genre_endpoint(request: Classification_request):
 
 @app.get('/download/{filename}')
 def download_mp3(filename: str):
+  # drop colon sign
   filename = filename[1:]
+  
+  filename = filename.replace('+', ' ')
   
   filepath = '../mp3/' + filename +'.mp3'
   return FileResponse(path=filepath, filename=filepath, media_type='text/mp3')
