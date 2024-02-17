@@ -152,6 +152,7 @@ def tag_mp3_file(filepath: str, request: Classification_request, genre: str):
     # year does not work as intended
     if tag_name == 'year': continue
     
+    file.remove_tag(tag_name)
     file.append_tag(tag_name, tag_value)
     
   # check if user specified year tag
