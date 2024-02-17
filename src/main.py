@@ -38,6 +38,9 @@ async def genre_endpoint(request: Classification_request):
   
   genre, genre_distribution, genre_sequence = predict(model, mfccs)
   
+  # append genre to tags
+  tag_mp3_file(filepath, request, genre)
+  
   response = {
     "genre": genre,
     "genreSequence": genre_sequence,

@@ -137,3 +137,28 @@ def get_key_with_max_value(dict: dict):
   
   return max_key
 
+def tag_mp3_file(filepath: str, request: Classification_request, genre: str):
+  
+  tags = request.tags
+  tags['genre'] = genre
+  
+  file = music_tag.load_file(filepath + '.mp3')
+  
+  for tag_name, tag_value in tags.items():
+    
+    # tag has not been assigned
+    if tag_value == '': continue
+    
+    # year does not work as intended
+    if tag_name == 'year': continue
+    
+    file.append_tag(tag_name, tag_value)
+    
+  # check if user specified year tag
+  if tags['year'] != '':
+    file.remove_tag('year')  
+    
+    # append users year 
+    file.raw['year'] = tags['year']
+  
+  file.save()
