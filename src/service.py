@@ -1,13 +1,21 @@
 from dependencies import *
 from schemas import Classification_request
 
-def generate_unique_filename(request: Classification_request):
+def generate_unique_filename(request: Classification_request,
+                             directory: str):
   
   filename = request.fileName
+  unique_filename = ''
   
-  #generate unique uuid 
-  unique_string = str(uuid.uuid4().hex)[:4]
-  return unique_string + '_' + filename
+  while True:
+    #generate unique uuid 
+    unique_string = str(uuid.uuid4().hex)[:4]
+    unique_filename = unique_string + ' ' + filename
+    
+    if is_filename_unique(unique_filename, directory):
+      break
+    
+  return unique_filename
 
 def is_filename_unique(filename: str, directory: str):
   
@@ -21,8 +29,6 @@ def is_filename_unique(filename: str, directory: str):
 async def save_file_from_request(request: Classification_request, filepath: str):
   try:
     
-    #parse data from request
-    #data = await request.json()
     base64_data = request.base64Data
     binary_data = base64.b64decode(base64_data)
     
@@ -86,11 +92,13 @@ def generate_mfcc_from_file(filepath: str, n_mfcc=13, n_fft=2048, hop_length=512
 
 def predict(model, X):
   
-  list_of_genres = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
-  
+  list_of_genres = ['blues', 'classical',
+                    'country', 'disco',
+                    'hiphop', 'jazz',
+                    'metal', 'pop',
+                    'reggae', 'rock']
   genres_sequence = []
-  
-  dict = {
+  genres_distribution = {
     'blues': 0,
     'classical': 0,
     'country': 0,
@@ -111,19 +119,18 @@ def predict(model, X):
     
     # extract index with max value
     predicted_index = np.argmax(prediction, axis=1)
-    
+
     # get the predicted genre from the list
     predicted_genre = list_of_genres[int(predicted_index)]
+    genres_distribution[predicted_genre] += 1
     
     # save sequence of genres 
     genres_sequence.append(predicted_genre)
     
-    dict[predicted_genre] += 1
-    
   # extract main genre from the dictionary
-  genre = get_key_with_max_value(dict)
+  genre = get_key_with_max_value(genres_distribution)
   
-  return genre, dict, genres_sequence
+  return genre, genres_distribution, genres_sequence
 
 def get_key_with_max_value(dict: dict):
   max_key = None
@@ -137,7 +144,9 @@ def get_key_with_max_value(dict: dict):
   
   return max_key
 
-def tag_mp3_file(filepath: str, request: Classification_request, genre: str):
+def tag_mp3_file(filepath: str, 
+                 request: Classification_request, 
+                 genre: str):
   
   tags = request.tags
   tags['genre'] = genre

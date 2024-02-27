@@ -14,19 +14,13 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-@app.post('/')
+@app.post('/classify')
 async def genre_endpoint(request: Classification_request):
   
-  filename = ''
-  filepath = '../mp3/'
   
-  while True:
-    
-    filename = generate_unique_filename(request)
-    
-    if is_filename_unique(filename, filepath):
-      filepath += filename
-      break
+  filepath = '../mp3/'
+  filename = generate_unique_filename(request, filepath)
+  filepath += filename
   
   await save_file_from_request(request, filepath)
   convert_mp3_to_wav(filepath)
@@ -34,11 +28,11 @@ async def genre_endpoint(request: Classification_request):
   
   delete_wavs()
   
+  # http does not allow spaces
   filename = filename.replace(' ', '+')
   
   genre, genre_distribution, genre_sequence = predict(model, mfccs)
   
-  # append genre to tags
   tag_mp3_file(filepath, request, genre)
   
   response = {
@@ -56,4 +50,5 @@ def download_mp3(filename: str):
   filename = filename.replace('+', ' ')
   filepath = '../mp3/' + filename +'.mp3'
   
-  return FileResponse(path=filepath, filename=filepath, media_type='text/mp3')
+  return FileResponse(path=filepath, filename=filepath,
+                      media_type='text/mp3')
