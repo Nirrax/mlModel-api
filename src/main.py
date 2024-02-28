@@ -4,7 +4,7 @@ from schemas import Classification_request
 
 app = FastAPI()
 
-model = keras.models.load_model('CNN_Model.keras')
+model = keras.models.load_model('../model/CNN_Model.keras')
 
 app.add_middleware(
     CORSMiddleware,
