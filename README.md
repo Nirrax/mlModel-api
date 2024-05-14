@@ -1,6 +1,6 @@
 ## Description
 
-FastAPI service for music genre classification
+FastAPI service for Music Genre Classification project
 
 ## Installation
 
