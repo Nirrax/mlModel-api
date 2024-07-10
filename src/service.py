@@ -4,7 +4,7 @@ from schemas import Classification_request
 def generate_unique_filename(request: Classification_request,
                              directory: str):
   
-  filename = request.fileName
+  filename: str = request.fileName
   unique_filename = ''
   
   while True:
@@ -40,7 +40,6 @@ async def save_file_from_request(request: Classification_request, filepath: str)
     print(f'Error: {str(e)}')
     
 def convert_mp3_to_wav(filepath: str):
-  
   audio = AudioSegment.from_mp3(filepath+'.mp3')
   audio.export(filepath+'.wav', format='wav')    
  
