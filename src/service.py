@@ -2,9 +2,9 @@ from dependencies import *
 from schemas import Classification_request
 
 def generate_unique_filename(request: Classification_request,
-                             directory: str):
+                             directory: str) -> str:
   
-  filename: str = request.fileName
+  filename = request.fileName
   unique_filename = ''
   
   while True:
@@ -17,7 +17,7 @@ def generate_unique_filename(request: Classification_request,
     
   return unique_filename
 
-def is_filename_unique(filename: str, directory: str):
+def is_filename_unique(filename: str, directory: str) -> bool:
   
   files_in_directory = os.listdir(directory)
   
@@ -26,7 +26,7 @@ def is_filename_unique(filename: str, directory: str):
   else:
     return True
 
-async def save_file_from_request(request: Classification_request, filepath: str):
+async def save_file_from_request(request: Classification_request, filepath: str) -> None:
   try:
     
     base64_data = request.base64Data
@@ -39,11 +39,11 @@ async def save_file_from_request(request: Classification_request, filepath: str)
   except Exception as e:
     print(f'Error: {str(e)}')
     
-def convert_mp3_to_wav(filepath: str):
+def convert_mp3_to_wav(filepath: str) -> None:
   audio = AudioSegment.from_mp3(filepath+'.mp3')
   audio.export(filepath+'.wav', format='wav')    
  
-def delete_wavs(directory='../mp3/'):
+def delete_wavs(directory='../mp3/') -> None:
   # List all files in the directory
   files = os.listdir(directory)
 
@@ -53,7 +53,7 @@ def delete_wavs(directory='../mp3/'):
           file_path = os.path.join(directory, file)
           os.remove(file_path)
 
-def generate_mfcc_from_file(filepath: str, n_mfcc=13, n_fft=2048, hop_length=512):
+def generate_mfcc_from_file(filepath: str, n_mfcc=13, n_fft=2048, hop_length=512) -> np.array:
 
   SAMPLE_RATE = 22050
   mfccs = []
@@ -89,7 +89,7 @@ def generate_mfcc_from_file(filepath: str, n_mfcc=13, n_fft=2048, hop_length=512
 
   return np.array(mfccs)
 
-def predict(model, X):
+def predict(model, X) -> tuple[str, dict[str, int], list[str]]:
   
   list_of_genres = ['blues', 'classical',
                     'country', 'disco',
@@ -131,7 +131,7 @@ def predict(model, X):
   
   return genre, genres_distribution, genres_sequence
 
-def get_key_with_max_value(dict: dict):
+def get_key_with_max_value(dict: dict) -> int:
   max_key = None
   max_value = float('-inf')
 
@@ -145,7 +145,7 @@ def get_key_with_max_value(dict: dict):
 
 def tag_mp3_file(filepath: str, 
                  request: Classification_request, 
-                 genre: str):
+                 genre: str) -> None:
   
   tags = request.tags
   tags['genre'] = genre
