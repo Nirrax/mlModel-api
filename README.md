@@ -1,6 +1,6 @@
 ## Description
 
-FastAPI service for Music Genre Classification project
+FastAPI service for Music Genre Classification project  
 [Second repo for the project](https://github.com/Nirrax/Auth-api)
 
 ## Installation
