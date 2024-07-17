@@ -131,7 +131,7 @@ def predict(model, X) -> tuple[str, dict[str, int], list[str]]:
   
   return genre, genres_distribution, genres_sequence
 
-def get_key_with_max_value(dict: dict) -> int:
+def get_key_with_max_value(dict: dict) -> str:
   max_key = None
   max_value = float('-inf')
 
