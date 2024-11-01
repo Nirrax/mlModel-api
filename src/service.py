@@ -6,25 +6,23 @@ def generate_unique_filename(request: Classification_request,
   
   filename = request.fileName
   unique_filename = ''
+  files_in_directory = os.listdir(directory)
   
   while True:
     #generate unique uuid 
     unique_string = str(uuid.uuid4().hex)[:4]
     unique_filename = unique_string + ' ' + filename
     
-    if is_filename_unique(unique_filename, directory):
+    if is_filename_unique(unique_filename, files_in_directory):
       break
     
   return unique_filename
 
-def is_filename_unique(filename: str, directory: str) -> bool:
+def is_filename_unique(filename: str, files_in_directory: list[str]) -> bool:
   
-  files_in_directory = os.listdir(directory)
+  if len(filename) == 0: return False
   
-  if filename in files_in_directory:
-    return False
-  else:
-    return True
+  return filename not in files_in_directory
 
 async def save_file_from_request(request: Classification_request, filepath: str) -> None:
   try:
