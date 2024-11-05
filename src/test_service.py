@@ -21,3 +21,32 @@ def test_is_filename_unique():
     assert is_filename_unique("file1", ["file1","file2"]) is False
     assert is_filename_unique("file1", ["file2"]) is True
     assert is_filename_unique("", []) is False
+    
+def test_delete_wavs(tmp_path):
+    directory = tmp_path / "sub"
+    directory.mkdir()
+    
+    assert len(list(directory.iterdir())) == 0
+    
+    delete_wavs(directory=directory)
+    
+    assert len(list(directory.iterdir())) == 0
+    
+    #generate files
+    files = []
+    files.append(directory / "file1.wav")
+    files.append(directory / "file2.WaV")
+    files.append(directory / "file3.png")
+    files.append(directory / "file4.mp3")
+    files.append(directory / "file5.txt")
+    files.append(directory / "file6.wav")
+    for file in files:
+        file.touch() 
+        
+    #count files before delete
+    assert len(list(directory.iterdir())) == 6
+    
+    delete_wavs(directory=directory)
+    
+    #count files after delete
+    assert len(list(directory.iterdir())) == 4
