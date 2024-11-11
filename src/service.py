@@ -142,10 +142,9 @@ def get_key_with_max_value(dict: dict) -> str:
   return max_key
 
 def tag_mp3_file(filepath: str, 
-                 request: Classification_request, 
+                 tags: dict, 
                  genre: str) -> None:
   
-  tags = request.tags
   tags['genre'] = genre
   
   file = music_tag.load_file(filepath + '.mp3')

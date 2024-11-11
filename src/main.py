@@ -33,7 +33,7 @@ async def genre_endpoint(request: Classification_request):
   
   genre, genre_distribution, genre_sequence = predict(model, mfccs)
   
-  tag_mp3_file(filepath, request, genre)
+  tag_mp3_file(filepath, request.tags, genre)
   
   response = {
     "genre": genre,
