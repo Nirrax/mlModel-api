@@ -1,5 +1,7 @@
 import pytest
+from dependencies import *
 from service import *
+from schemas import Classification_request
 
 @pytest.mark.parametrize(
     "input_dict, expected",
@@ -50,3 +52,44 @@ def test_delete_wavs(tmp_path):
     
     #count files after delete
     assert len(list(directory.iterdir())) == 4
+    
+    
+def test_tag_mp3_file(tmp_path):
+    directory = tmp_path / "sub"
+    directory.mkdir()
+    
+    assert len(list(directory.iterdir())) == 0
+    
+    #create an empty mp3 file
+    empty_mp3 = AudioSegment.silent(duration=250)
+    empty_mp3.export((directory / "file.mp3"), format="mp3")
+    
+    file_mp3 = music_tag.load_file(directory / "file.mp3")
+    
+    #test if tags are nonexisting
+    assert str(file_mp3['artist']) == ''
+    assert str(file_mp3['title']) == ''
+    assert str(file_mp3['album']) == ''
+    assert str(file_mp3['year']) == ''
+    assert str(file_mp3['genre']) == ''
+    file_mp3.save()
+    
+    tags = {
+        'artist': 'andrzej',
+        'title': 'kowalski',
+        'album': 'Miodowe lata',
+        'year': 2005
+    }
+    
+    tag_mp3_file(str(directory / "file"), tags, 'rock')
+    
+    #test if tags are matching
+    file_mp3 = music_tag.load_file(directory / "file.mp3")
+    assert str(file_mp3['artist']) == 'andrzej'
+    assert str(file_mp3['title']) == 'kowalski'
+    assert str(file_mp3['album']) == 'Miodowe lata'
+    assert str(file_mp3['year']) == '2005' 
+    
+    
+    
+    
