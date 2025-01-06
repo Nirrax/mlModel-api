@@ -1,4 +1,4 @@
-import pytest
+import pytest, asyncio
 from dependencies import *
 from service import *
 from schemas import Classification_request
@@ -53,7 +53,6 @@ def test_delete_wavs(tmp_path):
     #count files after delete
     assert len(list(directory.iterdir())) == 4
     
-    
 def test_tag_mp3_file(tmp_path):
     directory = tmp_path / "sub"
     directory.mkdir()
@@ -90,6 +89,21 @@ def test_tag_mp3_file(tmp_path):
     assert str(file_mp3['album']) == 'Miodowe lata'
     assert str(file_mp3['year']) == '2005' 
     
+@pytest.mark.asyncio    
+async def test_save_file_from_request(tmp_path):
+    directory = tmp_path / 'sub'
+    directory.mkdir()
     
+    assert len(list(directory.iterdir())) == 0
     
+    empty_mp3 = AudioSegment.silent(duration=250)
+    empty_mp3.export((directory / "file.mp3"), format="mp3")
+    
+    with open(directory / "file.mp3", "rb") as mp3_file:
+        encoded_mp3 = base64.b64encode(mp3_file.read())
+    
+    request = Classification_request(fileName="", tags={}, base64Data=encoded_mp3)
+    await save_file_from_request(request, str((directory / "newFile")))
+    
+    assert os.path.getsize(directory / "file.mp3") == os.path.getsize(directory / "newFile.mp3")
     
