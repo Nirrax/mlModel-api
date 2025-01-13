@@ -88,6 +88,19 @@ def test_tag_mp3_file(tmp_path):
     assert str(file_mp3['title']) == 'kowalski'
     assert str(file_mp3['album']) == 'Miodowe lata'
     assert str(file_mp3['year']) == '2005' 
+ 
+def test_convert_mp3_to_wav(tmp_path):
+    directory = tmp_path / "sub"
+    directory.mkdir()
+    
+    assert len(list(directory.iterdir())) == 0
+    
+    empty_mp3 = AudioSegment.silent(duration=250)
+    empty_mp3.export((directory / "file.mp3"), format="mp3")
+    
+    convert_mp3_to_wav(str(directory / "file"))
+    
+    assert (directory / "file.wav").exists()
     
 @pytest.mark.asyncio    
 async def test_save_file_from_request(tmp_path):
