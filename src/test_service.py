@@ -102,6 +102,29 @@ def test_convert_mp3_to_wav(tmp_path):
     
     assert (directory / "file.wav").exists()
     
+def test_generate_unique_filename(tmp_path):
+    directory = tmp_path / "sub"
+    directory.mkdir()    
+
+    assert len(list(directory.iterdir())) == 0
+    
+    request = Classification_request(fileName="file.mp3", tags={}, base64Data="")
+    
+    #generate files
+    files = []
+    files.append(directory / "file1.mp3")
+    files.append(directory / "file2.mp3")
+    files.append(directory / "file3.mp3")
+    files.append(directory / "file4.mp3")
+    files.append(directory / "file5.mp3")
+    files.append(directory / "file6.mp3")
+    for file in files:
+        file.touch() 
+        
+    new_filename = generate_unique_filename(request, directory)
+    
+    assert new_filename not in files
+
 @pytest.mark.asyncio    
 async def test_save_file_from_request(tmp_path):
     directory = tmp_path / 'sub'
