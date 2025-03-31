@@ -5,7 +5,7 @@ FastAPI service for Music Genre Classification project
 
 ## Requirements
 
-Python version < 3.11
+Python version - 3.10.11
 
 ## Installation
 
